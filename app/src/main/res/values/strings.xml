@@ -28,4 +28,6 @@
     <string name="read_external_storage_permission_denied">Permission for reading external storage denied</string>
     <string name="photo_upload_failure">Error with photo upload</string>
     <string name="photo_upload_success">Photo successfully uploaded</string>
+    <string name="snap_image">Snap Image</string>
+    <string name="image_download_unsuccessful">Image download unsuccessful</string>
 </resources>

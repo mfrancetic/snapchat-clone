@@ -14,16 +14,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import com.mfrancetic.snapchatclone.Constants.Companion.FROM_KEY
+import com.mfrancetic.snapchatclone.Constants.Companion.IMAGES_KEY
 import com.mfrancetic.snapchatclone.Constants.Companion.IMAGE_CHOOSE_CODE
-import com.mfrancetic.snapchatclone.Constants.Companion.IMAGE_KEY
 import com.mfrancetic.snapchatclone.Constants.Companion.IMAGE_NAME_KEY
 import com.mfrancetic.snapchatclone.Constants.Companion.IMAGE_URL_KEY
 import com.mfrancetic.snapchatclone.Constants.Companion.MESSAGE_KEY
-import com.mfrancetic.snapchatclone.Constants.Companion.NOTE_KEY
 import com.mfrancetic.snapchatclone.Constants.Companion.PERMISSION_CODE_READ
 import kotlinx.android.synthetic.main.activity_new_snap.*
 import java.io.ByteArrayOutputStream
@@ -79,34 +77,38 @@ class NewSnapActivity : AppCompatActivity() {
         val data = baos.toByteArray()
 
         // create a child with a unique name (UUID + .jpg)
-        val uploadTask = storageReference.child("images").child(imageName)
-            .putBytes(data)
+        val ref: StorageReference = storageReference.child(IMAGES_KEY).child(imageName)
 
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener {
-            // Handle unsuccessful uploads
-            Toast.makeText(
-                baseContext,
-                getString(R.string.photo_upload_failure),
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }.addOnSuccessListener { taskSnapshot ->
-            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-            // ...
-            Toast.makeText(
-                baseContext,
-                getString(R.string.photo_upload_success),
-                Toast.LENGTH_SHORT).show()
+        val uploadTask = ref.putBytes(data)
+         uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    throw task.exception!!
+                }
+                // Continue with the task to get the download URL
+                ref.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.photo_upload_success),
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-            val downloadUrl = taskSnapshot.toString()
-
-            val intent = Intent(this, SnapUsersActivity::class.java)
-            intent.putExtra(MESSAGE_KEY, note_new_snap_edit_text.text.toString())
-            intent.putExtra(IMAGE_URL_KEY, downloadUrl)
-            intent.putExtra(IMAGE_NAME_KEY, imageName)
-            startActivity(intent)
-        }
+                    val downloadUri = task.result
+                    val intent = Intent(this, SnapUsersActivity::class.java)
+                    intent.putExtra(MESSAGE_KEY, note_new_snap_edit_text.text.toString())
+                    intent.putExtra(IMAGE_URL_KEY, downloadUri.toString())
+                    intent.putExtra(IMAGE_NAME_KEY, imageName)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.photo_upload_failure),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -128,8 +130,8 @@ class NewSnapActivity : AppCompatActivity() {
 
     private fun checkPermissionForImage() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ((checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)) {
-                val permission = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            if ((checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)) {
+                val permission = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 requestPermissions(
                     permission,
                     PERMISSION_CODE_READ

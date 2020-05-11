@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -14,11 +15,11 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_snap.*
-import kotlinx.android.synthetic.main.activity_snap_users.*
 
 class SnapActivity : AppCompatActivity() {
 
     private var emails: ArrayList<String> = ArrayList()
+    private var snaps: ArrayList<DataSnapshot> = ArrayList()
     private var adapter: ArrayAdapter<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +33,17 @@ class SnapActivity : AppCompatActivity() {
     private fun setupListView() {
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, emails)
         all_snaps_list_view.adapter = adapter
+        all_snaps_list_view.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, id ->
+                val displaySnapIntent = Intent(this, ViewSnapActivity::class.java)
+
+                val snapshot = snaps[position]
+                displaySnapIntent.putExtra(Constants.MESSAGE_KEY, snapshot.child(Constants.MESSAGE_KEY).value as String)
+                displaySnapIntent.putExtra(Constants.IMAGE_NAME_KEY, snapshot.child(Constants.IMAGE_NAME_KEY).value as String)
+                displaySnapIntent.putExtra(Constants.IMAGE_URL_KEY, snapshot.child(Constants.IMAGE_URL_KEY).value as String)
+                displaySnapIntent.putExtra(Constants.SNAP_KEY, snapshot.key)
+                startActivity(displaySnapIntent)
+            }
     }
 
     private fun showAllSnaps() {
@@ -43,6 +55,7 @@ class SnapActivity : AppCompatActivity() {
                 .addChildEventListener(object : ChildEventListener {
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val email = p0.child(Constants.FROM_KEY).value as String
+                        snaps.add(p0)
                         emails.add(email)
                         adapter?.notifyDataSetChanged()
                     }
