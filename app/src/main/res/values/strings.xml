@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">SnapchatClone</string>
+    <string name="logo">Logo</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
+    <string name="switch_to_sign_up">Don\'t have an account? Sign up!</string>
+    <string name="switch_to_login">Have an account? Login!</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="email">E-Mail</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="authentication_failed">Authentication failed.</string>
+    <string name="sign_up_success">You have successfully signed up</string>
+    <string name="email_password_empty">Email and password must not be empty</string>
+    <string name="email_password_too_short">Password must not be shorter than 3 characters</string>
+    <string name="login_success">You have successfully logged in</string>
 </resources>
