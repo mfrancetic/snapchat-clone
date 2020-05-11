@@ -12,13 +12,11 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import com.mfrancetic.snapchatclone.Constants.Companion.EMAIL_ID
+import com.mfrancetic.snapchatclone.Constants.Companion.USERS_KEY
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
-    private val USERS_KEY = "users"
-
-    private val EMAIL_ID = "email";
 
     private lateinit var database: DatabaseReference
 

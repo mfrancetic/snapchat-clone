@@ -14,24 +14,23 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import com.google.firebase.storage.ktx.storageMetadata
+import com.mfrancetic.snapchatclone.Constants.Companion.FROM_KEY
+import com.mfrancetic.snapchatclone.Constants.Companion.IMAGE_CHOOSE_CODE
+import com.mfrancetic.snapchatclone.Constants.Companion.IMAGE_KEY
+import com.mfrancetic.snapchatclone.Constants.Companion.IMAGE_NAME_KEY
+import com.mfrancetic.snapchatclone.Constants.Companion.IMAGE_URL_KEY
+import com.mfrancetic.snapchatclone.Constants.Companion.MESSAGE_KEY
+import com.mfrancetic.snapchatclone.Constants.Companion.NOTE_KEY
+import com.mfrancetic.snapchatclone.Constants.Companion.PERMISSION_CODE_READ
 import kotlinx.android.synthetic.main.activity_new_snap.*
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileInputStream
 import java.util.*
 
 
 class NewSnapActivity : AppCompatActivity() {
-
-    private val IMAGE_NOTE: String = ""
-
-    private val IMAGE_CHOOSE_CODE = 1
-
-    private val PERMISSION_CODE_READ = 1
 
     private var choosePhotoIntent: Intent? = null
 
@@ -62,12 +61,12 @@ class NewSnapActivity : AppCompatActivity() {
                 )
                     .show()
             } else {
-                goToNextActivity()
+                nextButtonClicked()
             }
         })
     }
 
-    private fun goToNextActivity() {
+    private fun nextButtonClicked() {
         val storage = Firebase.storage
         val storageReference = storage.reference
 
@@ -92,17 +91,22 @@ class NewSnapActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             )
                 .show()
-        }.addOnSuccessListener {
+        }.addOnSuccessListener { taskSnapshot ->
             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
             // ...
             Toast.makeText(
                 baseContext,
                 getString(R.string.photo_upload_success),
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
+                Toast.LENGTH_SHORT).show()
 
+            val downloadUrl = taskSnapshot.toString()
+
+            val intent = Intent(this, SnapUsersActivity::class.java)
+            intent.putExtra(MESSAGE_KEY, note_new_snap_edit_text.text.toString())
+            intent.putExtra(IMAGE_URL_KEY, downloadUrl)
+            intent.putExtra(IMAGE_NAME_KEY, imageName)
+            startActivity(intent)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
