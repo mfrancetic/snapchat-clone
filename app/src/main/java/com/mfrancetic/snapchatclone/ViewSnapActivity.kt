@@ -7,6 +7,11 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.google.firebase.FirebaseApiNotAvailableException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_view_snap.*
 import java.lang.Exception
 import java.net.HttpURLConnection
@@ -25,8 +30,6 @@ class ViewSnapActivity : AppCompatActivity() {
         if (intent != null) {
             val snapMessage = intent.getStringExtra(Constants.MESSAGE_KEY)
             val imageUrl = intent.getStringExtra(Constants.IMAGE_URL_KEY)
-            val imageName = intent.getStringExtra(Constants.IMAGE_NAME_KEY)
-            val snapshotId = intent.getStringExtra(Constants.SNAP_KEY)
 
             snap_detail_message.text = snapMessage
             downloadImage(imageUrl)
@@ -62,6 +65,27 @@ class ViewSnapActivity : AppCompatActivity() {
                 e.printStackTrace()
                 null
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        deleteSnap()
+    }
+
+    private fun deleteSnap() {
+        val database = FirebaseDatabase.getInstance().reference
+        val currentUser = FirebaseAuth.getInstance().currentUser?.uid
+
+        val imageName = intent.getStringExtra(Constants.IMAGE_NAME_KEY)
+        val snapshotId = intent.getStringExtra(Constants.SNAP_KEY)
+
+        if (snapshotId != null) {
+            database.child(Constants.USERS_KEY).child(currentUser.toString()).child(Constants.SNAPS_KEY).child(snapshotId).removeValue()
+        }
+        if (imageName != null) {
+            FirebaseStorage.getInstance().reference.child(Constants.IMAGES_KEY).child(imageName)
+                .delete()
         }
     }
 }

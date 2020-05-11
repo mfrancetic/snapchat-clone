@@ -70,6 +70,13 @@ class SnapActivity : AppCompatActivity() {
                     }
 
                     override fun onChildRemoved(p0: DataSnapshot) {
+                        for ((index, snap) in snaps.withIndex()) {
+                            if (snap.key == p0.key) {
+                                snaps.removeAt(index)
+                                emails.remove(emails[index])
+                                adapter?.notifyDataSetChanged()
+                            }
+                        }
                     }
                 })
         }
