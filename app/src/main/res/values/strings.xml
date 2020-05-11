@@ -24,4 +24,6 @@
     <string name="next">Next</string>
     <string name="choose_image_unsuccessful">Error with choosing image</string>
     <string name="note_text_blank_error">Note text must not be blank</string>
+    <string name="read_external_storage_permission_granted">Permission for reading external storage granted</string>
+    <string name="read_external_storage_permission_denied">Permission for reading external storage denied</string>
 </resources>
