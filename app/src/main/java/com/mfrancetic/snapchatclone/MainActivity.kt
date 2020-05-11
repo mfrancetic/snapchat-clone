@@ -1,5 +1,6 @@
 package com.mfrancetic.snapchatclone
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -127,6 +128,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUi(currentUser: FirebaseUser?) {
+        if (currentUser != null) {
+            val goToSnapActivity = Intent(this, SnapActivity::class.java)
+            startActivity(goToSnapActivity)
+        }
         println("currentUser : $currentUser")
     }
 }
