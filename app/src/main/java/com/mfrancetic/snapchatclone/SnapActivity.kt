@@ -27,8 +27,16 @@ class SnapActivity : AppCompatActivity() {
         if (itemId == R.id.logout) {
             logoutUser()
             return true
+        } else if (itemId == R.id.new_snap) {
+            openNewSnapView()
+            return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun openNewSnapView() {
+       val openNewSnapIntent = Intent(this, NewSnapActivity::class.java)
+        startActivity(openNewSnapIntent)
     }
 
     private fun logoutUser() {

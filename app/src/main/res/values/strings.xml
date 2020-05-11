@@ -17,4 +17,11 @@
     <string name="login_success">You have successfully logged in</string>
     <string name="logout">Logout</string>
     <string name="logout_successful">You have successfully logged out</string>
+    <string name="new_snap">New snap</string>
+    <string name="snap_preview">Snap Preview</string>
+    <string name="choose_image">Choose image</string>
+    <string name="note">Note</string>
+    <string name="next">Next</string>
+    <string name="choose_image_unsuccessful">Error with choosing image</string>
+    <string name="note_text_blank_error">Note text must not be blank</string>
 </resources>
