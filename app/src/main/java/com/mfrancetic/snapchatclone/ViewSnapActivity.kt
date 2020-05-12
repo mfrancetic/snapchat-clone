@@ -7,10 +7,8 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.google.firebase.FirebaseApiNotAvailableException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_view_snap.*
 import java.lang.Exception
@@ -23,6 +21,7 @@ class ViewSnapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_snap)
 
+        title = getString(R.string.snap_details)
         displaySnapDetails()
     }
 
@@ -81,7 +80,9 @@ class ViewSnapActivity : AppCompatActivity() {
         val snapshotId = intent.getStringExtra(Constants.SNAP_KEY)
 
         if (snapshotId != null) {
-            database.child(Constants.USERS_KEY).child(currentUser.toString()).child(Constants.SNAPS_KEY).child(snapshotId).removeValue()
+            database.child(Constants.USERS_KEY).child(currentUser.toString())
+                .child(Constants.SNAPS_KEY).child(snapshotId).removeValue()
+            Toast.makeText(this, getString(R.string.snap_deleted), Toast.LENGTH_SHORT).show()
         }
         if (imageName != null) {
             FirebaseStorage.getInstance().reference.child(Constants.IMAGES_KEY).child(imageName)

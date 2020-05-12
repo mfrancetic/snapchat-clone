@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:padding="@dimen/default_padding"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
@@ -11,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/logo"
+        android:paddingTop="@dimen/padding_small"
         android:src="@mipmap/ic_launcher"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,10 +20,11 @@
 
     <EditText
         android:id="@+id/email_edit_text"
-        android:layout_width="300dp"
+        android:layout_width="@dimen/edit_text_width"
         android:layout_height="wrap_content"
         android:autofillHints="@string/email"
         android:hint="@string/email"
+        android:paddingTop="@dimen/padding_small"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,10 +32,11 @@
 
     <EditText
         android:id="@+id/password_edit_text"
-        android:layout_width="300dp"
+        android:layout_width="@dimen/edit_text_width"
         android:layout_height="wrap_content"
         android:autofillHints="@string/password"
         android:hint="@string/password"
+        android:paddingTop="@dimen/padding_small"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,20 +44,23 @@
 
     <EditText
         android:id="@+id/password2_edit_text"
-        android:layout_width="300dp"
+        android:layout_width="@dimen/edit_text_width"
         android:layout_height="wrap_content"
         android:autofillHints="@string/repeat_password"
         android:hint="@string/repeat_password"
         android:inputType="textPassword"
+        android:paddingTop="@dimen/padding_small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/password_edit_text" />
 
     <Button
+        style="@style/ButtonStyle"
         android:id="@+id/sign_up_login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login"
+        android:layout_margin="@dimen/default_padding"
         app:layout_constraintStart_toStartOf="@id/password_edit_text"
         app:layout_constraintTop_toBottomOf="@id/password2_edit_text" />
 
@@ -61,6 +68,7 @@
         android:id="@+id/switch_to_sign_up_login_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/padding_small"
         android:text="@string/switch_to_sign_up"
         app:layout_constraintBottom_toBottomOf="@id/sign_up_login_button"
         app:layout_constraintStart_toEndOf="@id/sign_up_login_button"

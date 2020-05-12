@@ -3,17 +3,16 @@ package com.mfrancetic.snapchatclone
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_snap.*
 
 class SnapActivity : AppCompatActivity() {
@@ -26,11 +25,34 @@ class SnapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_snap)
 
-        setupListView()
+        title = getString(R.string.received_snaps)
+        setupLoadingView()
+        setupListViewAdapter()
         showAllSnaps()
     }
 
-    private fun setupListView() {
+    private fun setupLoadingView() {
+        snaps_loading_indicator.visibility = View.VISIBLE
+        all_snaps_list_view.visibility = View.INVISIBLE
+        empty_snaps_image_view.visibility = View.GONE
+        empty_snaps_text_view.visibility = View.GONE
+    }
+
+    private fun setupEmptyView() {
+        snaps_loading_indicator.visibility = View.GONE
+        empty_snaps_image_view.visibility = View.VISIBLE
+        empty_snaps_text_view.visibility = View.VISIBLE
+        snaps_loading_indicator.visibility = View.GONE
+    }
+
+    private fun setupSnapsListView() {
+        all_snaps_list_view.visibility = View.VISIBLE
+        snaps_loading_indicator.visibility = View.GONE
+        empty_snaps_text_view.visibility = View.GONE
+        empty_snaps_image_view.visibility = View.GONE
+    }
+
+    private fun setupListViewAdapter() {
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, emails)
         all_snaps_list_view.adapter = adapter
         all_snaps_list_view.onItemClickListener =
@@ -38,9 +60,18 @@ class SnapActivity : AppCompatActivity() {
                 val displaySnapIntent = Intent(this, ViewSnapActivity::class.java)
 
                 val snapshot = snaps[position]
-                displaySnapIntent.putExtra(Constants.MESSAGE_KEY, snapshot.child(Constants.MESSAGE_KEY).value as String)
-                displaySnapIntent.putExtra(Constants.IMAGE_NAME_KEY, snapshot.child(Constants.IMAGE_NAME_KEY).value as String)
-                displaySnapIntent.putExtra(Constants.IMAGE_URL_KEY, snapshot.child(Constants.IMAGE_URL_KEY).value as String)
+                displaySnapIntent.putExtra(
+                    Constants.MESSAGE_KEY,
+                    snapshot.child(Constants.MESSAGE_KEY).value as String
+                )
+                displaySnapIntent.putExtra(
+                    Constants.IMAGE_NAME_KEY,
+                    snapshot.child(Constants.IMAGE_NAME_KEY).value as String
+                )
+                displaySnapIntent.putExtra(
+                    Constants.IMAGE_URL_KEY,
+                    snapshot.child(Constants.IMAGE_URL_KEY).value as String
+                )
                 displaySnapIntent.putExtra(Constants.SNAP_KEY, snapshot.key)
                 startActivity(displaySnapIntent)
             }
@@ -50,6 +81,7 @@ class SnapActivity : AppCompatActivity() {
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
         val database = FirebaseDatabase.getInstance().reference
         if (currentUserUid != null) {
+            setupEmptyView()
             database.child(Constants.USERS_KEY)
                 .child(currentUserUid).child(Constants.SNAPS_KEY)
                 .addChildEventListener(object : ChildEventListener {
@@ -58,6 +90,7 @@ class SnapActivity : AppCompatActivity() {
                         snaps.add(p0)
                         emails.add(email)
                         adapter?.notifyDataSetChanged()
+                        setupSnapsListView()
                     }
 
                     override fun onCancelled(p0: DatabaseError) {
@@ -77,39 +110,42 @@ class SnapActivity : AppCompatActivity() {
                                 adapter?.notifyDataSetChanged()
                             }
                         }
+                        if (snaps.size < 1) {
+                            setupEmptyView()
+                        }
                     }
                 })
         }
     }
 
-        override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-            val menuInflater: MenuInflater = menuInflater
-            menuInflater.inflate(R.menu.main, menu)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater: MenuInflater = menuInflater
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val itemId = item.itemId
+        if (itemId == R.id.logout) {
+            logoutUser()
+            return true
+        } else if (itemId == R.id.new_snap) {
+            openNewSnapView()
             return true
         }
-
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            val itemId = item.itemId
-            if (itemId == R.id.logout) {
-                logoutUser()
-                return true
-            } else if (itemId == R.id.new_snap) {
-                openNewSnapView()
-                return true
-            }
-            return super.onOptionsItemSelected(item)
-        }
-
-        private fun openNewSnapView() {
-            val openNewSnapIntent = Intent(this, NewSnapActivity::class.java)
-            startActivity(openNewSnapIntent)
-        }
-
-        private fun logoutUser() {
-            FirebaseAuth.getInstance().signOut()
-            Toast.makeText(this, getString(R.string.logout_successful), Toast.LENGTH_SHORT)
-                .show()
-            val goBackToMainActivity = Intent(this, MainActivity::class.java)
-            startActivity(goBackToMainActivity)
-        }
+        return super.onOptionsItemSelected(item)
     }
+
+    private fun openNewSnapView() {
+        val openNewSnapIntent = Intent(this, NewSnapActivity::class.java)
+        startActivity(openNewSnapIntent)
+    }
+
+    private fun logoutUser() {
+        FirebaseAuth.getInstance().signOut()
+        Toast.makeText(this, getString(R.string.logout_successful), Toast.LENGTH_SHORT)
+            .show()
+        val goBackToMainActivity = Intent(this, MainActivity::class.java)
+        startActivity(goBackToMainActivity)
+    }
+}

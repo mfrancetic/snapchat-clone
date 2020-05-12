@@ -65,6 +65,8 @@ class NewSnapActivity : AppCompatActivity() {
     }
 
     private fun nextButtonClicked() {
+        new_snap_loading_indicator.visibility = View.VISIBLE
+
         val storage = Firebase.storage
         val storageReference = storage.reference
 
@@ -87,7 +89,9 @@ class NewSnapActivity : AppCompatActivity() {
                 // Continue with the task to get the download URL
                 ref.downloadUrl
             }.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
+             new_snap_loading_indicator.visibility = View.GONE
+
+             if (task.isSuccessful) {
                     Toast.makeText(
                         baseContext,
                         getString(R.string.photo_upload_success),
@@ -101,6 +105,8 @@ class NewSnapActivity : AppCompatActivity() {
                     intent.putExtra(IMAGE_NAME_KEY, imageName)
                     startActivity(intent)
                 } else {
+                    new_snap_loading_indicator.visibility = View.GONE
+
                     Toast.makeText(
                         baseContext,
                         getString(R.string.photo_upload_failure),

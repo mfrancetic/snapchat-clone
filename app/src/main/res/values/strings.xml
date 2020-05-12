@@ -30,4 +30,13 @@
     <string name="photo_upload_success">Photo successfully uploaded</string>
     <string name="snap_image">Snap Image</string>
     <string name="image_download_unsuccessful">Image download unsuccessful</string>
+    <string name="no_snaps_available">No snaps available</string>
+    <string name="empty_view_image">Empty view image</string>
+    <string name="choose_recipient">Choose recipient</string>
+    <string name="snap_sent">Snap sent</string>
+    <string name="no_users_available">No users available</string>
+    <string name="received_snaps">Received snaps</string>
+    <string name="snap_details">Snap details</string>
+    <string name="snap_deleted">Snap deleted</string>
+    <string name="app_logo">App logo</string>
 </resources>

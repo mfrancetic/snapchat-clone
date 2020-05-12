@@ -3,12 +3,12 @@ package com.mfrancetic.snapchatclone
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_snap_users.*
 
 class SnapUsersActivity : AppCompatActivity() {
@@ -22,8 +22,10 @@ class SnapUsersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_snap_users)
 
+        title = getString(R.string.choose_recipient)
         database = FirebaseDatabase.getInstance().reference
 
+        setupLoadingView()
         getUsersFromDatabase()
         setupListView()
     }
@@ -32,7 +34,8 @@ class SnapUsersActivity : AppCompatActivity() {
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, emails)
         users_list_view.adapter = adapter
         users_list_view.onItemClickListener = OnItemClickListener { parent, view, position, id
-            -> createNewSnap(position)
+            ->
+            createNewSnap(position)
         }
     }
 
@@ -43,15 +46,17 @@ class SnapUsersActivity : AppCompatActivity() {
             val imageName = intent.getStringExtra(Constants.IMAGE_NAME_KEY)
             val imageUrl = intent.getStringExtra(Constants.IMAGE_URL_KEY)
 
-            val snapMap: Map <String, String> = mapOf(
+            val snapMap: Map<String, String> = mapOf(
                 Constants.FROM_KEY to fromEmail,
                 Constants.IMAGE_NAME_KEY to imageName,
                 Constants.IMAGE_URL_KEY to imageUrl,
                 Constants.MESSAGE_KEY to message
             )
             database.child(Constants.USERS_KEY).child(userKeys[position]).child(Constants.SNAPS_KEY)
-                    // random ID will be generated
+                // random ID will be generated
                 .push().setValue(snapMap)
+
+            Toast.makeText(this, getString(R.string.snap_sent), Toast.LENGTH_SHORT).show()
 
             val intent = Intent(this, SnapActivity::class.java)
             // wipe everything from the history
@@ -62,28 +67,60 @@ class SnapUsersActivity : AppCompatActivity() {
 
     private fun getUsersFromDatabase() {
         val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
-        database.child(Constants.USERS_KEY).addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                val email = p0.child(Constants.EMAIL_ID).value as String
-                if (email != currentUserEmail) {
-                    emails.add(email)
-                    userKeys.add(p0.key.toString())
-                    adapter?.notifyDataSetChanged()
+        setupEmptyView()
+        database.child(Constants.USERS_KEY)
+            .addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                    val email = p0.child(Constants.EMAIL_ID).value as String
+                    if (email != currentUserEmail) {
+                        emails.add(email)
+                        userKeys.add(p0.key.toString())
+                        adapter?.notifyDataSetChanged()
+                        removeEmptyView()
+                    }
                 }
-            }
 
-            override fun onCancelled(p0: DatabaseError) {
-            }
+                override fun onCancelled(p0: DatabaseError) {
+                }
 
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-            }
+                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                }
 
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-            }
+                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                }
 
-            override fun onChildRemoved(p0: DataSnapshot) {
-            }
+                override fun onChildRemoved(p0: DataSnapshot) {
+                    val email = p0.child(Constants.EMAIL_ID).value as String
+                    if (email != currentUserEmail) {
+                        emails.remove(email)
+                        userKeys.remove(p0.key.toString())
+                        adapter?.notifyDataSetChanged()
+                    }
+                    if (emails.size < 1) {
+                        setupEmptyView()
+                    }
+                }
+            })
+    }
 
-        })
+    private fun removeEmptyView() {
+        users_loading_indicator.visibility = View.GONE
+        users_list_view.visibility = View.VISIBLE
+        users_empty_image_view.visibility = View.GONE
+        users_empty_text_view.visibility = View.GONE
+    }
+
+    private fun setupEmptyView() {
+        users_loading_indicator.visibility = View.GONE
+        users_empty_text_view.visibility = View.VISIBLE
+        users_empty_image_view.visibility = View.VISIBLE
+        users_list_view.visibility = View.INVISIBLE
+    }
+
+    private fun setupLoadingView() {
+        users_loading_indicator.visibility = View.VISIBLE
+        users_empty_image_view.visibility = View.GONE
+        users_empty_text_view.visibility = View.GONE
+        users_list_view.visibility = View.INVISIBLE
     }
 }
