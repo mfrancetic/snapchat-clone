@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -69,6 +70,7 @@ class ViewSnapActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        view_snap_loading_indicator.visibility = View.VISIBLE
         deleteSnap()
     }
 
@@ -83,6 +85,8 @@ class ViewSnapActivity : AppCompatActivity() {
             database.child(Constants.USERS_KEY).child(currentUser.toString())
                 .child(Constants.SNAPS_KEY).child(snapshotId).removeValue()
             Toast.makeText(this, getString(R.string.snap_deleted), Toast.LENGTH_SHORT).show()
+
+            view_snap_loading_indicator.visibility = View.GONE
         }
         if (imageName != null) {
             FirebaseStorage.getInstance().reference.child(Constants.IMAGES_KEY).child(imageName)

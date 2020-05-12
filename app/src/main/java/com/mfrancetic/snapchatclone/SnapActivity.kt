@@ -3,13 +3,11 @@ package com.mfrancetic.snapchatclone
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -19,7 +17,7 @@ class SnapActivity : AppCompatActivity() {
 
     private var emails: ArrayList<String> = ArrayList()
     private var snaps: ArrayList<DataSnapshot> = ArrayList()
-    private var adapter: ArrayAdapter<String>? = null
+    private var adapter: UsersAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +51,7 @@ class SnapActivity : AppCompatActivity() {
     }
 
     private fun setupListViewAdapter() {
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, emails)
+        adapter = UsersAdapter(this, emails)
         all_snaps_list_view.adapter = adapter
         all_snaps_list_view.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
