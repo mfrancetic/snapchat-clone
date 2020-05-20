@@ -40,6 +40,7 @@ class NewSnapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_snap)
 
+        title = getString(R.string.send_snap)
         checkPermissionForImage()
         setOnClickListeners()
     }

@@ -39,4 +39,5 @@
     <string name="snap_details">Snap details</string>
     <string name="snap_deleted">Snap deleted</string>
     <string name="app_logo">App logo</string>
+    <string name="send_snap">Send a snap</string>
 </resources>
