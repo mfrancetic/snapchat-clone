@@ -9,6 +9,6 @@ It is written in programming language Kotlin.
 
 <img src="https://user-images.githubusercontent.com/33599053/82435148-27b17500-9a94-11ea-8935-a2b2040ea412.png" width=30% height=30%> 
 
-<img src="https://user-images.githubusercontent.com/33599053/82342532-0304c100-99f2-11ea-8cb6-d36b4f0d634b.png" width=30% height=30%> 
+<img src="https://user-images.githubusercontent.com/33599053/82435423-95f63780-9a94-11ea-81a9-e6b7a079a639.png" width=30% height=30%> 
 
 <img src="https://user-images.githubusercontent.com/33599053/82428598-013b0c00-9a8b-11ea-94d1-20a97ab1e697.png" width=30% height=30%> 
